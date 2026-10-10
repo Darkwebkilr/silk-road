@@ -41,7 +41,7 @@ export default function MobileNav() {
       </SheetTrigger>
 
       <SheetContent side="left" className="w-[300px] p-0 flex flex-col bg-white">
-        {/* Başlık / Logo */}
+        
         <SheetHeader className="p-6 border-b border-stone-200 text-left">
           <SheetTitle className="font-serif text-2xl tracking-[0.2em] uppercase text-stone-900 font-normal">
             ATELIER SILK
@@ -51,7 +51,7 @@ export default function MobileNav() {
           </span>
         </SheetHeader>
 
-        {/* Kategoriler */}
+        
         <div className="flex-1 overflow-y-auto p-5 space-y-1">
           {MOBILE_CATEGORIES.map((cat) => (
             <Link
@@ -67,8 +67,15 @@ export default function MobileNav() {
             </Link>
           ))}
 
-          {/* Hızlı Bilgi Linkleri */}
+          
           <div className="pt-6 space-y-2.5 text-[11px] text-stone-500 tracking-wider">
+            <Link
+              href="/giris-yap"
+              onClick={() => setOpen(false)}
+              className="block font-medium text-stone-900 hover:text-stone-950 py-1"
+            >
+              Hesabım / Giriş Yap
+            </Link>
             <Link
               href="/siparis-takip"
               onClick={() => setOpen(false)}
@@ -93,10 +100,10 @@ export default function MobileNav() {
           </div>
         </div>
 
-        {/* Alt Footer Bölümü */}
+        
         <div className="p-5 border-t border-stone-200 bg-[#faf9f6] space-y-3">
           <a
-            href="https://wa.me/905550000000"
+            href="https://wa.me/905519283598"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 py-2.5 bg-stone-900 text-white text-xs tracking-wider uppercase font-medium w-full"

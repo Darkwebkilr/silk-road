@@ -42,7 +42,7 @@ export default function CategoryStrip() {
               className="group block overflow-hidden"
             >
               <div className="relative aspect-[3/4] w-full overflow-hidden bg-stone-200">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                
                 <img
                   src={cat.image}
                   alt={cat.title}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useState, useMemo, Suspense } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { ALL_PRODUCTS } from "@/lib/products";
 import ProductCard from "@/components/boutique/product-card";
@@ -11,6 +11,10 @@ function SearchContent() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
   const [searchTerm, setSearchTerm] = useState(initialQuery);
+
+  useEffect(() => {
+    setSearchTerm(searchParams.get("q") || "");
+  }, [searchParams]);
 
   const results = useMemo(() => {
     if (!searchTerm.trim()) return ALL_PRODUCTS;
@@ -26,7 +30,7 @@ function SearchContent() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* 1. Başlık & Arama Çubuğu */}
+      
       <div className="bg-[#faf9f6] border-b border-stone-200 py-10 sm:py-16">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <nav aria-label="Breadcrumb" className="flex items-center justify-center gap-1.5 text-[11px] text-stone-500 tracking-wider uppercase mb-3">
@@ -41,7 +45,7 @@ function SearchContent() {
             Koleksiyonda Arayın
           </h1>
 
-          {/* Form */}
+          
           <div className="mt-6 max-w-xl mx-auto">
             <div className="relative flex items-center border-b-2 border-stone-900 pb-2">
               <Search className="size-5 text-stone-400 mr-3" />
@@ -71,7 +75,7 @@ function SearchContent() {
         </div>
       </div>
 
-      {/* 2. Sonuçlar Bilgisi */}
+      
       <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 border-b border-stone-100 flex items-center justify-between text-xs text-stone-500">
         <p>
           {searchTerm ? (
@@ -85,7 +89,7 @@ function SearchContent() {
         </p>
       </div>
 
-      {/* 3. Ürün Listesi */}
+      
       <div className="max-w-7xl mx-auto px-4 lg:px-8 py-10 sm:py-16">
         {results.length === 0 ? (
           <div className="py-20 text-center space-y-3">

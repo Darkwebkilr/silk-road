@@ -82,12 +82,12 @@ export default function CartPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14">
-            {/* Ürün Listesi */}
+            
             <div className="lg:col-span-8 space-y-6">
               <div className="border border-stone-200 divide-y divide-stone-200">
                 {items.map((item, idx) => (
                   <div key={idx} className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    
                     <img
                       src={item.product.images[0]}
                       alt={item.product.name}
@@ -143,7 +143,7 @@ export default function CartPage() {
                 ))}
               </div>
 
-              {/* Güvenceler */}
+              
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                 <div className="flex items-center gap-3 p-3.5 bg-[#faf9f6] border border-stone-200 text-xs text-stone-700">
                   <Truck className="size-4 text-stone-900 shrink-0" />
@@ -156,7 +156,7 @@ export default function CartPage() {
               </div>
             </div>
 
-            {/* Sipariş Özeti */}
+            
             <div className="lg:col-span-4 space-y-6">
               <div className="p-6 bg-[#faf9f6] border border-stone-200 space-y-4">
                 <h3 className="font-serif text-xl text-stone-950 font-normal border-b border-stone-200 pb-3">
@@ -187,7 +187,7 @@ export default function CartPage() {
                   </div>
                 </div>
 
-                {/* Kupon Kodu */}
+                
                 <form onSubmit={handleApplyCoupon} className="pt-2">
                   <div className="flex border border-stone-300 bg-white">
                     <input

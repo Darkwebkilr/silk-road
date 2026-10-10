@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ALL_PRODUCTS } from "@/lib/products";
 import ProductCard from "@/components/boutique/product-card";
-import { WhatsAppIcon } from "@/components/ui/brand-icons";
+import { useCart } from "@/lib/cart-context";
 import {
   ChevronRight,
   Heart,
@@ -15,6 +15,8 @@ import {
   ShoppingBag,
   Check,
   Ruler,
+  Plus,
+  Minus,
 } from "lucide-react";
 
 interface ProductClientProps {
@@ -23,31 +25,67 @@ interface ProductClientProps {
 
 export default function ProductClient({ slug }: ProductClientProps) {
   const product = ALL_PRODUCTS.find((p) => p.slug === slug);
+  const { addToCart } = useCart();
 
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string>(product?.sizes[0] || "");
   const [selectedColor, setSelectedColor] = useState<string>(product?.colors?.[0] || "");
+  const [quantity, setQuantity] = useState<number>(1);
   const [isLiked, setIsLiked] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
+  const [showStickyBar, setShowStickyBar] = useState(false);
+
+  const mainCtaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowStickyBar(!entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    const target = mainCtaRef.current;
+    if (target) {
+      observer.observe(target);
+    }
+
+    return () => {
+      if (target) observer.unobserve(target);
+    };
+  }, []);
 
   if (!product) {
     notFound();
   }
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    if (!product) return;
+
+    addToCart(
+      {
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        image: product.images[0],
+        size: selectedSize,
+        quantity: quantity,
+        slug: product.slug,
+      },
+      true
+    );
+
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };
-
-  const whatsappMessage = encodeURIComponent(
-    `Merhaba Atelier Silk, "${product.name}" (${selectedSize} beden) hakkında bilgi almak ve sipariş vermek istiyorum.`
-  );
 
   const similarProducts = ALL_PRODUCTS.filter((p) => p.id !== product.id).slice(0, 4);
 
   return (
     <div className="min-h-screen bg-white">
-      {/* 1. Breadcrumbs */}
+      
       <div className="border-b border-stone-200 py-3 bg-[#faf9f6]">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11px] text-stone-500 tracking-wider uppercase">
@@ -66,12 +104,12 @@ export default function ProductClient({ slug }: ProductClientProps) {
         </div>
       </div>
 
-      {/* 2. Ana Ürün Görünümü (İkili Kolon) */}
+      
       <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 lg:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
-          {/* Sol Kolon: Fotoğraf Galerisi */}
+          
           <div className="lg:col-span-7 flex flex-col-reverse sm:flex-row gap-3 sm:gap-4">
-            {/* Küçük Görseller */}
+            
             <div className="flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto shrink-0 pb-2 sm:pb-0">
               {product.images.map((img, idx) => (
                 <button
@@ -84,15 +122,15 @@ export default function ProductClient({ slug }: ProductClientProps) {
                       : "border-stone-200 opacity-70 hover:opacity-100"
                   }`}
                 >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  
                   <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
 
-            {/* Büyük Ana Görsel */}
+            
             <div className="relative flex-1 aspect-[3/4] bg-stone-100 overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+              
               <img
                 src={product.images[activeImageIndex] || product.images[0]}
                 alt={product.name}
@@ -119,7 +157,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
             </div>
           </div>
 
-          {/* Sağ Kolon: Ürün Detayları, Fiyat & Aksiyonlar */}
+          
           <div className="lg:col-span-5 space-y-6">
             <div className="space-y-1.5 border-b border-stone-200 pb-5">
               <span className="text-[10px] tracking-[0.3em] uppercase text-stone-400 font-semibold block">
@@ -141,7 +179,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
               </div>
             </div>
 
-            {/* Renk Seçimi */}
+            
             {product.colors && (
               <div className="space-y-2">
                 <span className="text-xs uppercase tracking-wider text-stone-500 font-medium block">
@@ -165,7 +203,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
               </div>
             )}
 
-            {/* Beden Seçimi */}
+            
             <div className="space-y-2 pt-1">
               <div className="flex items-center justify-between text-xs">
                 <span className="uppercase tracking-wider text-stone-500 font-medium">
@@ -199,42 +237,58 @@ export default function ProductClient({ slug }: ProductClientProps) {
               </div>
             </div>
 
-            {/* Aksiyon Butonları */}
-            <div className="space-y-3 pt-3">
-              <button
-                type="button"
-                onClick={handleAddToCart}
-                className={`w-full py-4 text-xs tracking-[0.25em] uppercase font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 ${
-                  isAdded
-                    ? "bg-emerald-800 text-white"
-                    : "bg-stone-950 text-white hover:bg-stone-800"
-                }`}
-              >
-                {isAdded ? (
-                  <>
-                    <Check className="size-4" />
-                    <span>ÇANTAYA EKLENDİ ({selectedSize})</span>
-                  </>
-                ) : (
-                  <>
-                    <ShoppingBag className="size-4" />
-                    <span>ÇANTAYA EKLE</span>
-                  </>
-                )}
-              </button>
+            
+            <div ref={mainCtaRef} className="space-y-3 pt-3">
+              <div className="flex items-center gap-3">
+                
+                <div className="flex items-center border border-stone-300 bg-[#faf9f6] h-12 px-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    aria-label="Adet Azalt"
+                    className="size-8 flex items-center justify-center text-stone-600 hover:text-stone-950 transition-colors"
+                  >
+                    <Minus className="size-3.5" />
+                  </button>
+                  <span className="w-8 text-center text-xs font-semibold text-stone-950">
+                    {quantity}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setQuantity((q) => q + 1)}
+                    aria-label="Adet Artır"
+                    className="size-8 flex items-center justify-center text-stone-600 hover:text-stone-950 transition-colors"
+                  >
+                    <Plus className="size-3.5" />
+                  </button>
+                </div>
 
-              <a
-                href={`https://wa.me/905550000000?text=${whatsappMessage}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full py-3.5 border border-emerald-600/40 hover:border-emerald-600 text-emerald-800 bg-emerald-50/50 hover:bg-emerald-50 text-xs tracking-wider uppercase font-medium flex items-center justify-center gap-2 transition-colors"
-              >
-                <WhatsAppIcon className="size-4 text-emerald-600" />
-                <span>WHATSAPP İLE SİPARİŞ VER / DANIŞ</span>
-              </a>
+                
+                <button
+                  type="button"
+                  onClick={handleAddToCart}
+                  className={`flex-1 h-12 text-xs tracking-[0.25em] uppercase font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 ${
+                    isAdded
+                      ? "bg-emerald-800 text-white"
+                      : "bg-stone-950 text-white hover:bg-stone-800"
+                  }`}
+                >
+                  {isAdded ? (
+                    <>
+                      <Check className="size-4" />
+                      <span>ÇANTAYA EKLENDİ ({quantity} Adet)</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag className="size-4" />
+                      <span>ÇANTAYA EKLE</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
-            {/* Butik Güvenceleri */}
+            
             <div className="p-4 bg-[#faf9f6] border border-stone-200/80 space-y-2.5 text-xs text-stone-600 font-light">
               <div className="flex items-center gap-2.5">
                 <ShieldCheck className="size-4 text-stone-900 shrink-0" />
@@ -250,7 +304,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
               </div>
             </div>
 
-            {/* Ürün & Kumaş Bilgileri */}
+            
             <div className="border-t border-stone-200 pt-5 space-y-3 text-xs">
               <h3 className="font-semibold text-stone-900 uppercase tracking-wider text-[11px]">
                 Ürün Detayı & Kumaş İçeriği
@@ -265,7 +319,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
         </div>
       </div>
 
-      {/* 3. Benzer Parçalar / Bu Ürünle Kombinle */}
+      
       <div className="border-t border-stone-200 py-16 bg-[#faf9f6]">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="text-center mb-10">
@@ -295,6 +349,87 @@ export default function ProductClient({ slug }: ProductClientProps) {
                 }}
               />
             ))}
+          </div>
+        </div>
+      </div>
+
+      
+      <div
+        className={`fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-[0_-4px_25px_rgba(0,0,0,0.08)] transition-all duration-300 transform ${
+          showStickyBar ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3 flex items-center justify-between gap-3 sm:gap-6">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className={`h-11 px-5 sm:px-7 text-[11px] sm:text-xs tracking-[0.2em] uppercase font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 cursor-pointer ${
+                isAdded
+                  ? "bg-emerald-800 text-white"
+                  : "bg-stone-950 text-white hover:bg-stone-800"
+              }`}
+            >
+              {isAdded ? (
+                <>
+                  <Check className="size-3.5" />
+                  <span>EKLENDİ</span>
+                </>
+              ) : (
+                <>
+                  <ShoppingBag className="size-3.5" />
+                  <span>SEPETE EKLE</span>
+                </>
+              )}
+            </button>
+
+            <div className="hidden sm:block">
+              <h4 className="text-xs font-medium text-stone-900 truncate max-w-[200px]">
+                {product.name}
+              </h4>
+              <p className="text-xs font-semibold text-stone-950">
+                {product.price.toLocaleString("tr-TR")} TL
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <div className="flex items-center gap-1">
+              <select
+                value={selectedSize}
+                onChange={(e) => setSelectedSize(e.target.value)}
+                aria-label="Beden Seçin"
+                className="bg-[#faf9f6] border border-stone-300 text-stone-900 text-xs py-2 px-2.5 focus:outline-none focus:border-stone-900 uppercase font-medium cursor-pointer"
+              >
+                {product.sizes.map((s) => (
+                  <option key={s} value={s}>
+                    {s}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center border border-stone-300 bg-[#faf9f6] h-11 px-1 shrink-0">
+              <button
+                type="button"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                aria-label="Adet Azalt"
+                className="size-8 flex items-center justify-center text-stone-600 hover:text-stone-950 transition-colors"
+              >
+                <Minus className="size-3" />
+              </button>
+              <span className="w-7 text-center text-xs font-semibold text-stone-950">
+                {quantity}
+              </span>
+              <button
+                type="button"
+                onClick={() => setQuantity((q) => q + 1)}
+                aria-label="Adet Artır"
+                className="size-8 flex items-center justify-center text-stone-600 hover:text-stone-950 transition-colors"
+              >
+                <Plus className="size-3" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

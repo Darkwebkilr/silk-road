@@ -51,7 +51,6 @@ export default function StoryModal({
     }
   }, [currentIndex]);
 
-  // 5 saniyelik otomatik hikaye ilerleme sayacı
   useEffect(() => {
     if (!isOpen) return;
 
@@ -68,7 +67,6 @@ export default function StoryModal({
     return () => clearInterval(interval);
   }, [isOpen, handleNext]);
 
-  // Klavye kontrolü
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
@@ -86,7 +84,7 @@ export default function StoryModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
-      {/* Kapatma Butonu */}
+      
       <button
         type="button"
         onClick={onClose}
@@ -96,7 +94,7 @@ export default function StoryModal({
         <X className="size-6" />
       </button>
 
-      {/* Sol Ok */}
+      
       {currentIndex > 0 && (
         <button
           type="button"
@@ -108,7 +106,7 @@ export default function StoryModal({
         </button>
       )}
 
-      {/* Sağ Ok */}
+      
       {currentIndex < stories.length - 1 && (
         <button
           type="button"
@@ -120,9 +118,9 @@ export default function StoryModal({
         </button>
       )}
 
-      {/* Hikaye Kartı (9:16 Telefon Formatı) */}
+      
       <div className="relative w-full max-w-[400px] h-full sm:h-[85vh] sm:max-h-[780px] sm:rounded-3xl overflow-hidden bg-stone-900 shadow-2xl flex flex-col justify-between">
-        {/* Üst İlerleme Çubukları */}
+        
         <div className="absolute top-0 inset-x-0 z-20 p-3 pt-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
           <div className="flex items-center gap-1.5 mb-3">
             {stories.map((s, idx) => (
@@ -145,7 +143,7 @@ export default function StoryModal({
             ))}
           </div>
 
-          {/* Butik Başlığı */}
+          
           <div className="flex items-center justify-between text-white">
             <div className="flex items-center gap-2">
               <span className="font-serif text-sm tracking-widest uppercase font-medium">
@@ -161,9 +159,9 @@ export default function StoryModal({
           </div>
         </div>
 
-        {/* Hikaye Arka Plan Fotoğrafı */}
+        
         <div className="absolute inset-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          
           <img
             src={current.image}
             alt={current.title}
@@ -172,13 +170,13 @@ export default function StoryModal({
           <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
         </div>
 
-        {/* Dokunmatik Sol / Sağ Geçiş Alanı */}
+        
         <div className="absolute inset-0 z-10 grid grid-cols-2">
           <div onClick={handlePrev} className="cursor-pointer" />
           <div onClick={handleNext} className="cursor-pointer" />
         </div>
 
-        {/* Alt Ürün Kartı & Satın Alma Çağrısı */}
+        
         <div className="relative z-20 p-5 pt-0 mt-auto">
           <div className="bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-xl flex items-center justify-between gap-3 text-stone-900">
             <div className="min-w-0">

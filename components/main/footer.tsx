@@ -7,7 +7,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#1c1917] text-stone-300 pt-16 pb-12 text-xs font-light">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        {/* Üst Kısım: E-Bülten Kayıt & Butik Bildirimi */}
+        
         <div className="pb-12 border-b border-stone-800 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="text-center md:text-left space-y-1">
             <h3 className="font-serif text-2xl text-white font-normal">
@@ -36,7 +36,7 @@ export default function Footer() {
           </form>
         </div>
 
-        {/* Orta Kısım: Linkler */}
+        
         <div className="py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
           <div className="space-y-3">
             <p className="font-serif text-lg tracking-wider text-white">ATELIER SILK</p>
@@ -55,7 +55,7 @@ export default function Footer() {
                 <InstagramIcon className="size-3.5" />
               </a>
               <a
-                href="https://wa.me/905550000000"
+                href="https://wa.me/905519283598"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="size-8 rounded-full border border-stone-700 flex items-center justify-center text-stone-300 hover:text-emerald-400 hover:border-emerald-400 transition-colors"
@@ -139,7 +139,7 @@ export default function Footer() {
             <ul className="space-y-2 text-stone-400 text-[11px]">
               <li className="flex items-center gap-1.5">
                 <WhatsAppIcon className="size-3 text-emerald-400" />
-                <span>WhatsApp: 0555 000 00 00</span>
+                <span>WhatsApp: 0551 928 35 98</span>
               </li>
               <li>Destek: butik@ateliersilk.com</li>
               <li>Nişantaşı / İstanbul</li>
@@ -148,7 +148,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Alt Kısım: Telif */}
+        
         <div className="pt-8 border-t border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-stone-500 text-[10px] tracking-wider uppercase">
           <p>© 2026 ATELIER SILK. Tüm Hakları Saklıdır.</p>
           <div className="flex items-center gap-4 text-stone-400">

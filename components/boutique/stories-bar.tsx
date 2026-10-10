@@ -65,7 +65,7 @@ export default function StoriesBar() {
 
   return (
     <>
-      <div className="w-full bg-[#faf9f6] border-b border-stone-200 py-3.5 select-none">
+      <div className="w-full bg-[#faf9f6] border-b border-stone-200 py-4 sm:py-5 select-none">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-start sm:justify-center gap-5 sm:gap-8 overflow-x-auto scrollbar-none py-1">
             {STORIES_DATA.map((story, index) => (
@@ -75,18 +75,19 @@ export default function StoriesBar() {
                 onClick={() => setSelectedStoryIndex(index)}
                 className="group flex flex-col items-center gap-2 shrink-0 outline-none cursor-pointer"
               >
-                {/* Zarif Butik Hikaye Çemberi */}
-                <div className="size-16 sm:size-18 rounded-full p-0.5 ring-1 ring-stone-300 ring-offset-2 ring-offset-[#faf9f6] group-hover:ring-stone-900 group-hover:scale-105 transition-all duration-300">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={story.image}
-                    alt={story.title}
-                    className="w-full h-full object-cover rounded-full"
-                    loading="lazy"
-                  />
+                
+                <div className="size-16 sm:size-18 rounded-full p-0.5 ring-1 ring-stone-300 ring-offset-2 ring-offset-[#faf9f6] group-hover:ring-stone-900 group-hover:scale-105 transition-all duration-300 overflow-hidden shrink-0">
+                  <div className="w-full h-full rounded-full overflow-hidden aspect-square bg-stone-200">
+                    <img
+                      src={story.image}
+                      alt={story.title}
+                      className="w-full h-full object-cover block"
+                      loading="eager"
+                    />
+                  </div>
                 </div>
 
-                {/* Başlık */}
+                
                 <span className="text-[10px] tracking-[0.16em] uppercase text-stone-700 font-medium group-hover:text-stone-950 transition-colors">
                   {story.title}
                 </span>
@@ -96,7 +97,7 @@ export default function StoriesBar() {
         </div>
       </div>
 
-      {/* Tam Ekran Instagram Hikaye Önizleme Modalı */}
+      
       {selectedStoryIndex !== null && (
         <StoryModal
           stories={STORIES_DATA}

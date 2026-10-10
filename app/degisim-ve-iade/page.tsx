@@ -39,7 +39,7 @@ export default function ReturnsPolicyPage() {
         <div className="space-y-4">
           <h4 className="font-serif text-xl text-stone-950 font-normal">Değişim Adımları</h4>
           <ol className="space-y-3 list-decimal list-inside pl-1">
-            <li>WhatsApp hattımıza (0555 000 00 00) sipariş numaranızı ve istediğiniz yeni bedeni bildirin.</li>
+            <li>WhatsApp hattımıza (0551 928 35 98) sipariş numaranızı ve istediğiniz yeni bedeni bildirin.</li>
             <li>Size ileteceğimiz anlaşmalı kargo kodu ile ürünü faturasıyla birlikte ücretsiz kargoya verin.</li>
             <li>Kargonuz bize ulaştığında yeni bedeniniz hazırlanarak tarafınıza gönderilir.</li>
           </ol>
@@ -47,7 +47,7 @@ export default function ReturnsPolicyPage() {
 
         <div className="pt-4 border-t border-stone-200">
           <a
-            href="https://wa.me/905550000000?text=Merhaba,%20ürünümde%20beden%20değişimi%20yapmak%20istiyorum."
+            href="https://wa.me/905519283598?text=Merhaba,%20ürünümde%20beden%20değişimi%20yapmak%20istiyorum."
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 px-6 py-3 bg-stone-950 text-white text-xs tracking-wider uppercase font-medium hover:bg-stone-800 transition-colors"

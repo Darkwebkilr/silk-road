@@ -6,7 +6,7 @@ export default function TopBar() {
   return (
     <div className="w-full bg-zinc-950 text-zinc-100 text-xs py-2 px-4 border-b border-zinc-800 transition-colors">
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-        {/* Sol: Duyuru / Kampanya */}
+        
         <div className="flex items-center gap-2 text-center sm:text-left">
           <span className="bg-rose-500/20 text-rose-300 font-semibold px-2 py-0.5 rounded-full text-[10px] tracking-wide border border-rose-500/30">
             YENİ SEZON
@@ -20,10 +20,10 @@ export default function TopBar() {
           </p>
         </div>
 
-        {/* Sağ: WhatsApp Sipariş & Butik İletişim */}
+        
         <div className="flex items-center gap-4 text-zinc-300 text-[11px] sm:text-xs">
           <a
-            href="https://wa.me/905550000000?text=Merhaba,%20butiğinizden%20bilgi%20almak%20istiyorum."
+            href="https://wa.me/905519283598?text=Merhaba,%20butiğinizden%20bilgi%20almak%20istiyorum."
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors font-medium"

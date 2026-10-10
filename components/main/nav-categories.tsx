@@ -91,7 +91,7 @@ export default function NavCategories() {
   return (
     <div className="relative border-t border-zinc-200/80 dark:border-zinc-800/80 bg-white dark:bg-zinc-950">
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between text-sm">
-        {/* Sol: Koleksiyonlar Dropdown */}
+        
         <div
           className="relative py-2"
           onMouseEnter={() => setIsMegaOpen(true)}
@@ -112,7 +112,7 @@ export default function NavCategories() {
             />
           </button>
 
-          {/* Mega Menü Panel */}
+          
           {isMegaOpen && (
             <div className="absolute top-full left-0 w-[840px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl p-6 z-50 animate-in fade-in-50 slide-in-from-top-2 duration-150">
               <div className="grid grid-cols-4 gap-6">
@@ -141,7 +141,7 @@ export default function NavCategories() {
                 })}
               </div>
 
-              {/* Mega Menü Alt Butik Bilgisi */}
+              
               <div className="mt-5 pt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-rose-50/50 dark:bg-rose-950/20 p-3 rounded-xl border border-rose-100 dark:border-rose-900/30">
                 <div className="flex items-center gap-3">
                   <span className="p-2 bg-rose-500/10 text-rose-500 rounded-lg">
@@ -169,7 +169,7 @@ export default function NavCategories() {
           )}
         </div>
 
-        {/* Orta: Ana Kategori Linkleri */}
+        
         <nav aria-label="Giyim Kategorileri" className="hidden lg:flex items-center gap-1 xl:gap-2">
           {BOUTIQUE_CATEGORIES.map((cat) => (
             <Link
@@ -198,7 +198,7 @@ export default function NavCategories() {
           ))}
         </nav>
 
-        {/* Sağ: Trend / Instagram Seçkisi Butonu */}
+        
         <div className="hidden xl:flex items-center">
           <Link
             href="/instagram-shop"

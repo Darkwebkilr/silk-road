@@ -65,7 +65,7 @@ export default function VideoReels() {
   return (
     <section className="py-16 lg:py-24 bg-white border-b border-stone-200">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        {/* Başlık */}
+        
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-4 border-b border-stone-200">
           <div>
             <span className="text-[10px] tracking-[0.3em] uppercase text-stone-400 font-medium block">
@@ -82,7 +82,7 @@ export default function VideoReels() {
           </div>
         </div>
 
-        {/* 4'lü Dikey 9:16 Video Kartları Izgarası */}
+        
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
           {REELS.map((reel) => {
             const isPlaying = playingId === reel.id;
@@ -94,7 +94,7 @@ export default function VideoReels() {
                 onMouseEnter={() => setPlayingId(reel.id)}
                 onMouseLeave={() => setPlayingId(null)}
               >
-                {/* Arka Plan Video veya Fallback Görseli */}
+                
                 {isPlaying ? (
                   <video
                     src={reel.videoUrl}
@@ -105,7 +105,6 @@ export default function VideoReels() {
                     className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
                   />
                 ) : (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={reel.fallbackImage}
                     alt={reel.title}
@@ -113,10 +112,10 @@ export default function VideoReels() {
                   />
                 )}
 
-                {/* Karartma Gradyanı */}
+                
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40 pointer-events-none" />
 
-                {/* Üst Rozet */}
+                
                 <div className="relative z-10 p-3.5 flex items-center justify-between text-white text-[10px] tracking-widest font-semibold uppercase">
                   <span className="bg-white/20 backdrop-blur-xs px-2 py-0.5 rounded-sm">
                     {reel.lookTag}
@@ -131,7 +130,7 @@ export default function VideoReels() {
                   </span>
                 </div>
 
-                {/* Alt Ürün Bilgisi & İncele Butonu */}
+                
                 <div className="relative z-10 p-3.5 text-white space-y-2">
                   <div>
                     <h4 className="text-xs sm:text-sm font-serif font-normal text-white truncate">

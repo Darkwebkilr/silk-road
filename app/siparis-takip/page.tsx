@@ -63,7 +63,7 @@ export default function OrderTrackingPage() {
               </span>
             </div>
 
-            {/* İlerleme Aşamaları */}
+            
             <div className="space-y-4 text-xs">
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="size-5 text-emerald-700 shrink-0 mt-0.5" />

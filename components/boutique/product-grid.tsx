@@ -130,7 +130,7 @@ export default function ProductGrid() {
   return (
     <section className="py-16 lg:py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        {/* Bölüm Başlığı & Minimal Sekmeler */}
+        
         <div className="flex flex-col sm:flex-row items-baseline justify-between gap-6 border-b border-stone-200 pb-5 mb-10">
           <div>
             <span className="text-[10px] tracking-[0.3em] uppercase text-stone-400 font-medium block">
@@ -162,14 +162,14 @@ export default function ProductGrid() {
           </div>
         </div>
 
-        {/* 4 Kolonlu Sade Grid */}
+        
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 sm:gap-x-6 gap-y-10 sm:gap-y-12">
           {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
 
-        {/* Alt Koleksiyon Butonu */}
+        
         <div className="mt-16 text-center">
           <Link
             href="/kategori/yeni-gelenler"

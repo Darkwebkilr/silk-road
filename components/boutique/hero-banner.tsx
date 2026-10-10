@@ -78,7 +78,6 @@ export default function HeroBanner() {
     setProgress(0);
   }, []);
 
-  // 6 saniyede bir otomatik geçiş
   useEffect(() => {
     const timer = setInterval(() => {
       setProgress((prev) => {
@@ -97,7 +96,7 @@ export default function HeroBanner() {
 
   return (
     <section className="relative w-full h-[82vh] min-h-[580px] max-h-[880px] overflow-hidden bg-stone-950 text-white select-none">
-      {/* 1. Arka Plan Fotoğrafları (Pürüzsüz Çapraz Geçiş) */}
+      
       {HERO_SLIDES.map((slide, idx) => (
         <div
           key={slide.id}
@@ -105,7 +104,7 @@ export default function HeroBanner() {
             idx === activeSlide ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
           }`}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          
           <img
             src={slide.image}
             alt={slide.title}
@@ -115,22 +114,22 @@ export default function HeroBanner() {
             loading={idx === 0 ? "eager" : "lazy"}
           />
 
-          {/* Sinematik Editoryal Karartma Gradyanları */}
+          
           <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-black/20" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
         </div>
       ))}
 
-      {/* 2. Ana İçerik Konteyneri */}
+      
       <div className="relative z-20 max-w-7xl mx-auto h-full px-4 lg:px-8 flex flex-col justify-between py-10 lg:py-14">
-        {/* Üst Sezon Başlığı */}
+        
         <div className="flex items-center justify-between">
           <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] tracking-[0.25em] uppercase font-light text-stone-200">
             <span className="size-1.5 rounded-full bg-white animate-pulse" />
             <span>{current.seasonTag}</span>
           </div>
 
-          {/* Masaüstü Sol / Sağ Kontrolleri */}
+          
           <div className="hidden sm:flex items-center gap-2">
             <button
               type="button"
@@ -151,7 +150,7 @@ export default function HeroBanner() {
           </div>
         </div>
 
-        {/* Orta: Büyük Editoryal Başlık & CTA */}
+        
         <div className="max-w-2xl space-y-6">
           <div className="space-y-2">
             <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight text-white leading-[1.05]">
@@ -182,9 +181,9 @@ export default function HeroBanner() {
           </div>
         </div>
 
-        {/* Alt Satır: Slayt Seçici Çubukları & Görseldeki Parça Kartı */}
+        
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 pt-4">
-          {/* Sol Alt: 3'lü İlerleme Çubuğu */}
+          
           <div className="flex items-center gap-4 w-full sm:w-auto">
             {HERO_SLIDES.map((slide, idx) => (
               <button
@@ -220,7 +219,7 @@ export default function HeroBanner() {
             ))}
           </div>
 
-          {/* Sağ Alt: Yüzen "Görseldeki Parça" Cam Kartı */}
+          
           <div className="w-full sm:w-auto">
             <Link
               href={`/urun/${current.featuredProduct.slug}`}

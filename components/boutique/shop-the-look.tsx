@@ -11,8 +11,8 @@ interface HotspotItem {
   price: number;
   slug: string;
   image: string;
-  top: string; // CSS percentage e.g. "32%"
-  left: string; // CSS percentage e.g. "48%"
+  top: string;
+  left: string;
 }
 
 const LOOK_PIECES: HotspotItem[] = [
@@ -63,7 +63,7 @@ export default function ShopTheLook() {
   return (
     <section className="py-16 lg:py-24 bg-[#faf9f6] border-y border-stone-200">
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        {/* Başlık */}
+        
         <div className="max-w-xl mx-auto text-center mb-12 space-y-1">
           <span className="text-[10px] tracking-[0.3em] uppercase text-stone-400 font-medium block">
             STİL DANIŞMANLIĞI
@@ -77,10 +77,10 @@ export default function ShopTheLook() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          {/* Sol Kolon: İnteraktif Hotspot Model Fotoğrafı */}
+          
           <div className="lg:col-span-7 relative aspect-[3/4] sm:aspect-[4/5] bg-stone-200 overflow-hidden shadow-sm">
-            {/* Model Fotoğrafı */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            
+            
             <img
               src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=900&auto=format&fit=crop&q=80"
               alt="Atelier Silk Look 04 Kombini"
@@ -88,7 +88,7 @@ export default function ShopTheLook() {
               loading="lazy"
             />
 
-            {/* İnteraktif Hotspot Pinleri */}
+            
             {LOOK_PIECES.map((piece) => {
               const isActive = activePin === piece.id;
               return (
@@ -103,7 +103,7 @@ export default function ShopTheLook() {
                     aria-label={piece.name}
                     className="relative group p-2 focus:outline-none"
                   >
-                    {/* Dış Animasyonlu Halka */}
+                    
                     <span
                       className={`absolute inset-0 rounded-full transition-transform duration-300 ${
                         isActive
@@ -112,7 +112,7 @@ export default function ShopTheLook() {
                       }`}
                     />
 
-                    {/* Merkez Buton */}
+                    
                     <span
                       className={`relative flex items-center justify-center size-7 rounded-full shadow-lg transition-all ${
                         isActive
@@ -131,10 +131,10 @@ export default function ShopTheLook() {
               );
             })}
 
-            {/* Görsel Üzerindeki Yüzen Mini Bilgi Kartı */}
+            
             <div className="absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-xs z-30">
               <div className="bg-white/95 backdrop-blur-md p-3.5 border border-stone-200 shadow-xl flex items-center gap-3">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                
                 <img
                   src={activeItem.image}
                   alt={activeItem.name}
@@ -162,7 +162,7 @@ export default function ShopTheLook() {
             </div>
           </div>
 
-          {/* Sağ Kolon: Kombindeki Parçaların Listesi & Hızlı Sepete Ekleme */}
+          
           <div className="lg:col-span-5 space-y-6">
             <div className="space-y-1">
               <span className="text-xs font-serif italic text-stone-500">
@@ -176,7 +176,7 @@ export default function ShopTheLook() {
               </p>
             </div>
 
-            {/* Parça Kartları */}
+            
             <div className="space-y-3 pt-2">
               {LOOK_PIECES.map((piece) => {
                 const isSelected = activePin === piece.id;
@@ -190,7 +190,7 @@ export default function ShopTheLook() {
                         : "border-stone-200 bg-white/60 hover:bg-white hover:border-stone-300"
                     }`}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    
                     <img
                       src={piece.image}
                       alt={piece.name}
@@ -220,7 +220,7 @@ export default function ShopTheLook() {
               })}
             </div>
 
-            {/* Tüm Kombini Satın Al Kutusu */}
+            
             <div className="pt-4 border-t border-stone-200 space-y-3">
               <div className="flex items-baseline justify-between">
                 <span className="text-xs uppercase tracking-wider text-stone-500 font-medium">

@@ -54,7 +54,7 @@ export default function CategoryClient({ slug }: CategoryClientProps) {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* 1. Üst Başlık & Breadcrumbs */}
+      
       <div className="bg-[#faf9f6] border-b border-stone-200 py-10 sm:py-16">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11px] text-stone-500 tracking-wider uppercase mb-4">
@@ -83,8 +83,7 @@ export default function CategoryClient({ slug }: CategoryClientProps) {
         </div>
       </div>
 
-      {/* 2. Filtreleme & Sıralama Barı */}
-      <div className="border-b border-stone-200 sticky top-16 lg:top-18 z-20 bg-white/95 backdrop-blur-md">
+      <div className="border-b border-stone-200 bg-white">
         <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-none w-full sm:w-auto pb-1 sm:pb-0">
             <span className="text-[11px] tracking-widest uppercase text-stone-400 font-medium mr-1 flex items-center gap-1 shrink-0">
@@ -127,7 +126,7 @@ export default function CategoryClient({ slug }: CategoryClientProps) {
         </div>
       </div>
 
-      {/* 3. Ürün Listesi */}
+      
       <div className="max-w-7xl mx-auto px-4 lg:px-8 py-10 sm:py-16">
         {filteredProducts.length === 0 ? (
           <div className="py-20 text-center space-y-3">

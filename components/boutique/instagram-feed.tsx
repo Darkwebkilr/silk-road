@@ -38,7 +38,7 @@ export default function InstagramFeed() {
             rel="noopener noreferrer"
             className="group relative aspect-square overflow-hidden bg-stone-200 block"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+            
             <img
               src={img}
               alt="Atelier Silk Instagram Kombini"

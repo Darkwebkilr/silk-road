@@ -6,7 +6,6 @@ import ProductCard from "@/components/boutique/product-card";
 import { Heart, ChevronRight, ArrowRight } from "lucide-react";
 
 export default function FavoritesPage() {
-  // Örnek başlangıç favori ürünleri
   const favoriteProducts = ALL_PRODUCTS.slice(0, 3);
 
   return (

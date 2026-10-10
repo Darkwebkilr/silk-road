@@ -30,7 +30,6 @@ export default function SearchBar() {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // Keyboard shortcut Ctrl+K / Cmd+K to focus search input
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -47,7 +46,6 @@ export default function SearchBar() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  // Close suggestions on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
@@ -77,13 +75,13 @@ export default function SearchBar() {
 
   return (
     <div ref={containerRef} className="relative w-full max-w-2xl">
-      {/* Semantic Search Form */}
+      
       <form
         role="search"
         onSubmit={handleSearchSubmit}
         className="flex items-center w-full border border-zinc-200 dark:border-zinc-800 rounded-full bg-zinc-50/80 dark:bg-zinc-900/80 hover:border-zinc-300 dark:hover:border-zinc-700 focus-within:border-zinc-950 dark:focus-within:border-zinc-400 focus-within:bg-white dark:focus-within:bg-zinc-900 focus-within:ring-2 focus-within:ring-zinc-900/10 dark:focus-within:ring-zinc-100/10 transition-all shadow-xs"
       >
-        {/* Kategori Seçici */}
+        
         <div className="hidden sm:flex items-center pl-3 pr-2 py-1.5 border-r border-zinc-200 dark:border-zinc-800">
           <select
             value={category}
@@ -99,12 +97,12 @@ export default function SearchBar() {
           </select>
         </div>
 
-        {/* Arama İkonu */}
+        
         <div className="pl-3 sm:pl-2 text-zinc-400 flex items-center">
           <Search className="size-4" aria-hidden="true" />
         </div>
 
-        {/* Input */}
+        
         <input
           ref={inputRef}
           type="search"
@@ -119,7 +117,7 @@ export default function SearchBar() {
           className="w-full py-2.5 px-2.5 text-sm bg-transparent text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 outline-none"
         />
 
-        {/* Temizle Butonu */}
+        
         {query && (
           <button
             type="button"
@@ -131,14 +129,14 @@ export default function SearchBar() {
           </button>
         )}
 
-        {/* Klavye Kısayolu Rozeti */}
+        
         <div className="hidden lg:flex items-center pr-2">
           <kbd className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono font-medium text-zinc-400 bg-zinc-200/70 dark:bg-zinc-800/80 rounded border border-zinc-300 dark:border-zinc-700 select-none">
             ⌘K
           </kbd>
         </div>
 
-        {/* Ara Butonu */}
+        
         <button
           type="submit"
           aria-label="Ara"
@@ -148,7 +146,7 @@ export default function SearchBar() {
         </button>
       </form>
 
-      {/* Popüler ve Trend Aramalar Dropdown */}
+      
       {isOpen && (
         <div className="absolute top-full left-0 right-0 mt-2 p-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-xl z-50 animate-in fade-in-50 zoom-in-95 duration-150">
           <div className="flex items-center justify-between pb-2 mb-3 border-b border-zinc-100 dark:border-zinc-800 text-xs font-semibold text-zinc-500 dark:text-zinc-400">
