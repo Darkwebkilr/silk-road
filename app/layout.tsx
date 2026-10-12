@@ -2,12 +2,8 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Geist, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/main/header";
-import Footer from "@/components/main/footer";
-import { CartProvider } from "@/lib/cart-context";
-import CartDrawer from "@/components/main/cart-drawer";
-import FloatingWhatsApp from "@/components/main/floating-whatsapp";
 import TopLoader from "@/components/ui/top-loader";
+import StoreLayoutWrapper from "@/components/main/store-layout-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -60,13 +56,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Suspense fallback={null}>
           <TopLoader />
         </Suspense>
-        <CartProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <CartDrawer />
-          <FloatingWhatsApp />
-        </CartProvider>
+        <StoreLayoutWrapper>{children}</StoreLayoutWrapper>
       </body>
     </html>
   );

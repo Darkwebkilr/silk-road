@@ -1,16 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
-import { Search, ChevronRight, Package, Truck, CheckCircle2 } from "lucide-react";
+import { Search, ChevronRight, Package, Truck, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { trackOrderAction } from "@/app/admin/actions";
+
+interface TrackedOrder {
+  orderNumber: string;
+  customerName: string;
+  status: "yeni" | "hazirlaniyor" | "kargoda" | "teslim_edildi" | "iptal";
+  trackingNumber?: string;
+  createdAt: string;
+  totalAmount: number;
+  itemsCount: number;
+}
 
 export default function OrderTrackingPage() {
-  const [orderNo, setOrderNo] = useState("");
-  const [searched, setSearched] = useState(false);
+  const [query, setQuery] = useState("");
+  const [order, setOrder] = useState<TrackedOrder | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const handleTrack = (e: React.FormEvent) => {
     e.preventDefault();
-    if (orderNo.trim()) setSearched(true);
+    if (!query.trim()) return;
+
+    setErrorMsg(null);
+    setOrder(null);
+
+    startTransition(async () => {
+      const res = await trackOrderAction(query);
+      if (res.success && res.order) {
+        setOrder(res.order as TrackedOrder);
+      } else {
+        setErrorMsg(res.error || "Sipariş bulunamadı.");
+      }
+    });
   };
 
   return (
@@ -35,57 +60,137 @@ export default function OrderTrackingPage() {
             <input
               type="text"
               required
-              value={orderNo}
-              onChange={(e) => setOrderNo(e.target.value)}
-              placeholder="Örn: #AS-2026-849 veya Telefon No"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Örn: #AS-2026-1042 veya 0532..."
               className="w-full p-3 text-xs outline-none uppercase font-mono"
             />
             <button
               type="submit"
-              className="px-6 py-3 bg-stone-950 text-white text-xs tracking-widest uppercase font-semibold shrink-0 hover:bg-stone-800 transition-colors"
+              disabled={isPending}
+              className="px-6 py-3 bg-stone-950 text-white text-xs tracking-widest uppercase font-semibold shrink-0 hover:bg-stone-800 transition-colors disabled:opacity-50 cursor-pointer"
             >
-              Sorgula
+              {isPending ? "Aranıyor..." : "Sorgula"}
             </button>
           </form>
         </div>
       </div>
 
-      {searched && (
+      {errorMsg && (
+        <div className="max-w-2xl mx-auto px-4 py-8">
+          <div className="p-4 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 animate-in fade-in">
+            <AlertCircle className="size-4 shrink-0 text-rose-600" />
+            <span>{errorMsg}</span>
+          </div>
+        </div>
+      )}
+
+      {order && (
         <div className="max-w-2xl mx-auto px-4 py-12 animate-in fade-in duration-300">
           <div className="border border-stone-200 p-6 sm:p-8 bg-[#faf9f6] space-y-6">
             <div className="flex items-center justify-between border-b border-stone-200 pb-4">
               <div>
                 <span className="text-[10px] tracking-wider uppercase text-stone-400 block">SİPARİŞ NO</span>
-                <span className="font-mono text-sm font-bold text-stone-900">{orderNo || "#AS-2026-849"}</span>
+                <span className="font-mono text-sm font-bold text-stone-900">{order.orderNumber}</span>
               </div>
-              <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full">
-                Kargoya Verildi
+              <span
+                className={`px-3 py-1 text-xs font-semibold rounded-full uppercase tracking-wider ${
+                  order.status === "yeni"
+                    ? "bg-amber-100 text-amber-800"
+                    : order.status === "hazirlaniyor"
+                    ? "bg-blue-100 text-blue-800"
+                    : order.status === "kargoda"
+                    ? "bg-purple-100 text-purple-800"
+                    : order.status === "teslim_edildi"
+                    ? "bg-emerald-100 text-emerald-800"
+                    : "bg-stone-100 text-stone-600"
+                }`}
+              >
+                {order.status === "yeni"
+                  ? "Yeni Sipariş"
+                  : order.status === "hazirlaniyor"
+                  ? "Hazırlanıyor"
+                  : order.status === "kargoda"
+                  ? "Kargoya Verildi"
+                  : order.status === "teslim_edildi"
+                  ? "Teslim Edildi"
+                  : "İptal Edildi"}
               </span>
             </div>
 
-            
             <div className="space-y-4 text-xs">
               <div className="flex items-start gap-3">
-                <CheckCircle2 className="size-5 text-emerald-700 shrink-0 mt-0.5" />
+                <CheckCircle2
+                  className={`size-5 shrink-0 mt-0.5 ${
+                    order.status !== "iptal" ? "text-emerald-700" : "text-stone-300"
+                  }`}
+                />
                 <div>
-                  <p className="font-semibold text-stone-900">Sipariş Hazırlandı</p>
-                  <p className="text-stone-500 text-[11px]">Kalite kontrol yapıldı ve şeffaf pakete yerleştirildi.</p>
+                  <p className="font-semibold text-stone-900">Sipariş Alındı</p>
+                  <p className="text-stone-500 text-[11px]">
+                    {new Date(order.createdAt).toLocaleDateString("tr-TR", {
+                      day: "numeric",
+                      month: "long",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })} • {order.itemsCount} ürün • {order.totalAmount.toLocaleString("tr-TR")} TL
+                  </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-3">
-                <Truck className="size-5 text-stone-900 shrink-0 mt-0.5" />
+                <Clock
+                  className={`size-5 shrink-0 mt-0.5 ${
+                    order.status === "hazirlaniyor" || order.status === "kargoda" || order.status === "teslim_edildi"
+                      ? "text-emerald-700"
+                      : "text-stone-300"
+                  }`}
+                />
                 <div>
-                  <p className="font-semibold text-stone-900">Yurtiçi Kargo Transfer Merkezinde</p>
-                  <p className="text-stone-500 text-[11px]">Kargo Takip No: 948194819284 • Tahmini Teslimat: Yarın 14:00</p>
+                  <p className="font-semibold text-stone-900">Hazırlık & Kalite Kontrol</p>
+                  <p className="text-stone-500 text-[11px]">
+                    {order.status === "hazirlaniyor"
+                      ? "Atölyemizde özenle paketleniyor ve kalite kontrolü yapılıyor."
+                      : order.status === "yeni"
+                      ? "Sıraya alındı, en kısa sürede hazırlanacak."
+                      : "Hazırlandı ve şeffaf kargo ambalajına yerleştirildi."}
+                  </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3 opacity-40">
-                <Package className="size-5 text-stone-400 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3">
+                <Truck
+                  className={`size-5 shrink-0 mt-0.5 ${
+                    order.status === "kargoda" || order.status === "teslim_edildi"
+                      ? "text-emerald-700"
+                      : "text-stone-300"
+                  }`}
+                />
                 <div>
-                  <p className="font-semibold text-stone-900">Teslim Edildi</p>
-                  <p className="text-stone-500 text-[11px]">Alıcıya kontrollü teslim edilecek.</p>
+                  <p className="font-semibold text-stone-900">Kargo Transferi</p>
+                  <p className="text-stone-500 text-[11px]">
+                    {order.trackingNumber
+                      ? `Kargo Takip Kodu: ${order.trackingNumber}`
+                      : order.status === "kargoda"
+                      ? "Kargo şubesine teslim edildi, takip kodu SMS ile paylaşılacaktır."
+                      : "Henüz kargoya teslim edilmedi."}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Package
+                  className={`size-5 shrink-0 mt-0.5 ${
+                    order.status === "teslim_edildi" ? "text-emerald-700" : "text-stone-300"
+                  }`}
+                />
+                <div>
+                  <p className="font-semibold text-stone-900">Teslimat</p>
+                  <p className="text-stone-500 text-[11px]">
+                    {order.status === "teslim_edildi"
+                      ? "Alıcıya şeffaf kargo kontrolleriyle teslim edildi."
+                      : "Alıcı adresine ulaştırılmak üzere taşınmaktadır."}
+                  </p>
                 </div>
               </div>
             </div>

@@ -1,17 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
-import { Check, ShieldCheck, ChevronRight, Lock, CreditCard, Sparkles, X } from "lucide-react";
+import { Check, ShieldCheck, ChevronRight, Lock, CreditCard, Sparkles, X, AlertCircle } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/brand-icons";
 import { useCart } from "@/lib/cart-context";
+import { placeCustomerOrderAction } from "@/app/admin/actions";
 
 export default function CheckoutPage() {
-  const { subtotal, remainingForFreeShipping, clearCart } = useCart();
+  const { items, subtotal, remainingForFreeShipping, clearCart } = useCart();
   const [showModal, setShowModal] = useState(false);
+  const [confirmedOrder, setConfirmedOrder] = useState<{
+    orderNumber: string;
+    totalAmount: number;
+  } | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
+    email: "",
     city: "İstanbul",
     address: "",
     paymentMethod: "card",
@@ -21,12 +30,44 @@ export default function CheckoutPage() {
   });
 
   const shippingFee = remainingForFreeShipping === 0 ? 0 : 59;
-  const totalAmount = subtotal > 0 ? subtotal + shippingFee : 2450;
+  const estimatedTotal = subtotal > 0 ? subtotal + shippingFee : 0;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setShowModal(true);
-    clearCart();
+    setErrorMessage(null);
+
+    if (items.length === 0) {
+      setErrorMessage("Sepetinizde ürün bulunmamaktadır.");
+      return;
+    }
+
+    const orderPayload = {
+      customerName: formData.name,
+      phone: formData.phone,
+      email: formData.email || undefined,
+      city: formData.city,
+      address: formData.address,
+      paymentMethod: formData.paymentMethod === "card" ? "kapida_kart" : "kapida_nakit",
+      items: items.map((i) => ({
+        productId: i.productId,
+        quantity: i.quantity,
+        size: i.size,
+      })),
+    };
+
+    startTransition(async () => {
+      const res = await placeCustomerOrderAction(orderPayload);
+      if (res.success && res.orderNumber) {
+        setConfirmedOrder({
+          orderNumber: res.orderNumber,
+          totalAmount: res.totalAmount || estimatedTotal,
+        });
+        setShowModal(true);
+        clearCart();
+      } else {
+        setErrorMessage(res.error || "Sipariş verilemedi. Lütfen tekrar deneyin.");
+      }
+    });
   };
 
   return (
@@ -55,10 +96,17 @@ export default function CheckoutPage() {
               </h1>
             </div>
 
+            {errorMessage && (
+              <div className="p-3.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-center gap-2 animate-in fade-in">
+                <AlertCircle className="size-4 shrink-0 text-rose-600" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
               <div>
                 <label className="block text-[11px] tracking-wider uppercase font-medium text-stone-700 mb-1">
-                  Ad Soyad
+                  Ad Soyad *
                 </label>
                 <input
                   required
@@ -73,7 +121,7 @@ export default function CheckoutPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-[11px] tracking-wider uppercase font-medium text-stone-700 mb-1">
-                    Telefon (Kargo Takibi İçin)
+                    Telefon (Kargo Takibi İçin) *
                   </label>
                   <input
                     required
@@ -87,7 +135,22 @@ export default function CheckoutPage() {
 
                 <div>
                   <label className="block text-[11px] tracking-wider uppercase font-medium text-stone-700 mb-1">
-                    Şehir
+                    E-Posta (Opsiyonel)
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="ad@ornek.com"
+                    className="w-full p-3 border border-stone-300 focus:border-stone-950 outline-none text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] tracking-wider uppercase font-medium text-stone-700 mb-1">
+                    Şehir *
                   </label>
                   <select
                     value={formData.city}
@@ -99,13 +162,24 @@ export default function CheckoutPage() {
                     <option value="İzmir">İzmir</option>
                     <option value="Bursa">Bursa</option>
                     <option value="Antalya">Antalya</option>
+                    <option value="Adana">Adana</option>
+                    <option value="Eskişehir">Eskişehir</option>
                   </select>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] tracking-wider uppercase font-medium text-stone-700 mb-1">
+                    Teslimat Tipi
+                  </label>
+                  <div className="p-3 border border-stone-200 bg-stone-50 text-stone-700 font-medium">
+                    {remainingForFreeShipping === 0 ? "Ücretsiz VIP Kargo" : "Standart Kargo (59 TL)"}
+                  </div>
                 </div>
               </div>
 
               <div>
                 <label className="block text-[11px] tracking-wider uppercase font-medium text-stone-700 mb-1">
-                  Açık Teslimat Adresi
+                  Açık Teslimat Adresi *
                 </label>
                 <textarea
                   required
@@ -202,10 +276,15 @@ export default function CheckoutPage() {
 
               <button
                 type="submit"
-                className="w-full mt-4 py-4 bg-stone-950 hover:bg-stone-800 text-white text-xs tracking-[0.25em] uppercase font-semibold text-center transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                disabled={isPending || items.length === 0}
+                className="w-full mt-4 py-4 bg-stone-950 hover:bg-stone-800 text-white text-xs tracking-[0.25em] uppercase font-semibold text-center transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
               >
                 <Lock className="size-3.5" />
-                <span>SİPARİŞİ TAMAMLA ({totalAmount.toLocaleString("tr-TR")} TL)</span>
+                <span>
+                  {isPending
+                    ? "SİPARİŞ ONAYLANIYOR..."
+                    : `SİPARİŞİ TAMAMLA (${estimatedTotal.toLocaleString("tr-TR")} TL)`}
+                </span>
               </button>
             </form>
           </div>
@@ -239,13 +318,13 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {showModal && (
+      {showModal && confirmedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-950/70 backdrop-blur-xs animate-in fade-in duration-200">
           <div className="bg-white max-w-md w-full p-6 sm:p-8 border border-stone-200 shadow-2xl relative animate-in zoom-in-95 duration-200 text-center space-y-4">
             <button
               type="button"
               onClick={() => setShowModal(false)}
-              className="absolute top-4 right-4 p-1.5 text-stone-400 hover:text-stone-950 transition-colors"
+              className="absolute top-4 right-4 p-1.5 text-stone-400 hover:text-stone-950 transition-colors cursor-pointer"
             >
               <X className="size-5" />
             </button>
@@ -265,12 +344,15 @@ export default function CheckoutPage() {
             </div>
 
             <div className="p-4 bg-[#faf9f6] border border-stone-200 space-y-1.5 text-xs">
-              <p className="text-stone-500 font-light">Kargo Takip Numaranız:</p>
+              <p className="text-stone-500 font-light">Sipariş Takip Numaranız:</p>
               <p className="text-base font-mono font-bold text-stone-950 tracking-wider">
-                Takip No: #1042
+                {confirmedOrder.orderNumber}
+              </p>
+              <p className="text-stone-700 font-semibold pt-1">
+                Toplam Tutar: {confirmedOrder.totalAmount.toLocaleString("tr-TR")} TL
               </p>
               <p className="text-[11px] text-stone-500 font-light pt-1">
-                Kargo durumunuz ve faturanız kayıtlı numaranıza SMS & WhatsApp ile iletilecektir.
+                Kargo durumunuz ve faturanız kayıtlı telefonunuza SMS & WhatsApp ile iletilecektir.
               </p>
             </div>
 
