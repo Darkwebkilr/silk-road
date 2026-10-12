@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { X, ChevronLeft, ChevronRight, ShoppingBag, ArrowRight } from "lucide-react";
+import { createPortal } from "react-dom";
+import { X, ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 
 export interface StoryData {
@@ -29,11 +30,27 @@ export default function StoryModal({
 }: StoryModalProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [progress, setProgress] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setCurrentIndex(initialIndex);
     setProgress(0);
   }, [initialIndex, isOpen]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
 
   const handleNext = useCallback(() => {
     if (currentIndex < stories.length - 1) {
@@ -78,51 +95,48 @@ export default function StoryModal({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onClose, handleNext, handlePrev]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const current = stories[currentIndex];
+  if (!current) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
-      
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label="Kapat"
-        className="absolute top-4 right-4 z-50 p-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-      >
-        <X className="size-6" />
-      </button>
-
-      
+  const modalContent = (
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 select-none">
       {currentIndex > 0 && (
         <button
           type="button"
           onClick={handlePrev}
           aria-label="Önceki"
-          className="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+          className="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
         >
           <ChevronLeft className="size-6" />
         </button>
       )}
 
-      
       {currentIndex < stories.length - 1 && (
         <button
           type="button"
           onClick={handleNext}
           aria-label="Sonraki"
-          className="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+          className="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 z-50 p-3 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
         >
           <ChevronRight className="size-6" />
         </button>
       )}
 
-      
-      <div className="relative w-full max-w-[400px] h-full sm:h-[85vh] sm:max-h-[780px] sm:rounded-3xl overflow-hidden bg-stone-900 shadow-2xl flex flex-col justify-between">
-        
-        <div className="absolute top-0 inset-x-0 z-20 p-3 pt-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent">
-          <div className="flex items-center gap-1.5 mb-3">
+      <div className="relative w-full h-[100dvh] sm:h-[90dvh] sm:max-h-[820px] sm:max-w-[420px] sm:rounded-3xl overflow-hidden bg-stone-900 shadow-2xl flex flex-col justify-between">
+        <img
+          key={current.id}
+          src={current.image}
+          alt={current.title}
+          className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none"
+          loading="eager"
+        />
+
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/60 z-10 pointer-events-none" />
+
+        <div className="relative z-30 pt-safe px-3 sm:px-4 pt-3 sm:pt-4">
+          <div className="flex items-center gap-1.5 mb-2.5">
             {stories.map((s, idx) => (
               <div
                 key={s.id}
@@ -143,44 +157,49 @@ export default function StoryModal({
             ))}
           </div>
 
-          
-          <div className="flex items-center justify-between text-white">
+          <div className="flex items-center justify-between text-white py-1">
             <div className="flex items-center gap-2">
-              <span className="font-serif text-sm tracking-widest uppercase font-medium">
+              <span className="font-serif text-sm tracking-widest uppercase font-medium drop-shadow-sm">
                 ATELIER SILK
               </span>
-              <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded-full uppercase tracking-wider">
+              <span className="text-[10px] bg-white/20 backdrop-blur-xs px-2 py-0.5 rounded-full uppercase tracking-wider font-light">
                 {current.tag}
               </span>
             </div>
-            <span className="text-xs text-white/70">
-              {currentIndex + 1} / {stories.length}
-            </span>
+
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-white/80 font-mono">
+                {currentIndex + 1} / {stories.length}
+              </span>
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Kapat"
+                className="p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white transition-colors cursor-pointer"
+              >
+                <X className="size-5" />
+              </button>
+            </div>
           </div>
         </div>
 
-        
-        <div className="absolute inset-0">
-          
-          <img
-            src={current.image}
-            alt={current.title}
-            className="w-full h-full object-cover"
+        <div className="absolute inset-0 z-20 grid grid-cols-2">
+          <div
+            onClick={handlePrev}
+            aria-label="Önceki hikaye"
+            className="h-full cursor-pointer"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+          <div
+            onClick={handleNext}
+            aria-label="Sonraki hikaye"
+            className="h-full cursor-pointer"
+          />
         </div>
 
-        
-        <div className="absolute inset-0 z-10 grid grid-cols-2">
-          <div onClick={handlePrev} className="cursor-pointer" />
-          <div onClick={handleNext} className="cursor-pointer" />
-        </div>
-
-        
-        <div className="relative z-20 p-5 pt-0 mt-auto">
-          <div className="bg-white/95 backdrop-blur-md p-3.5 rounded-2xl shadow-xl flex items-center justify-between gap-3 text-stone-900">
-            <div className="min-w-0">
-              <span className="text-[10px] tracking-widest uppercase text-stone-400 font-semibold block">
+        <div className="relative z-30 p-4 sm:p-5 pb-safe pb-6 sm:pb-5 mt-auto">
+          <div className="bg-white/95 backdrop-blur-md p-3.5 sm:p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-3 text-stone-900 border border-white/20">
+            <div className="min-w-0 flex-1">
+              <span className="text-[9px] tracking-widest uppercase text-stone-400 font-semibold block">
                 GÖRSELDEKİ PARÇA
               </span>
               <h4 className="text-xs sm:text-sm font-semibold truncate text-stone-900 mt-0.5">
@@ -194,7 +213,7 @@ export default function StoryModal({
             <Link
               href={`/urun/${current.productSlug}`}
               onClick={onClose}
-              className="shrink-0 px-4 py-2.5 rounded-xl bg-stone-950 text-white text-xs tracking-wider uppercase font-medium hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5"
+              className="shrink-0 px-4 py-2.5 rounded-xl bg-stone-950 text-white text-xs tracking-wider uppercase font-medium hover:bg-stone-800 transition-colors inline-flex items-center gap-1.5 shadow-sm"
             >
               <ShoppingBag className="size-3.5" />
               <span>İncele</span>
@@ -204,4 +223,6 @@ export default function StoryModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
