@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { ArrowRight, ShoppingBag, ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -66,76 +66,60 @@ const HERO_SLIDES: HeroSlide[] = [
 
 export default function HeroBanner() {
   const [activeSlide, setActiveSlide] = useState(0);
-  const [progress, setProgress] = useState(0);
 
   const nextSlide = useCallback(() => {
     setActiveSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-    setProgress(0);
   }, []);
 
   const prevSlide = useCallback(() => {
     setActiveSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
-    setProgress(0);
   }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          nextSlide();
-          return 0;
-        }
-        return prev + 1.67; // 100ms * 60 = 6000ms
-      });
-    }, 100);
-
-    return () => clearInterval(timer);
-  }, [nextSlide]);
 
   const current = HERO_SLIDES[activeSlide];
 
   return (
     <section className="relative w-full h-[82vh] min-h-[580px] max-h-[880px] overflow-hidden bg-stone-950 text-white select-none">
-      
+      {/* Çubuğun tam 6 saniyede kesintisiz dolmasını sağlayan CSS kuralı */}
+      <style>{`
+        @keyframes progressFill {
+          from { width: 0%; }
+          to { width: 100%; }
+        }
+      `}</style>
+
       {HERO_SLIDES.map((slide, idx) => (
         <div
           key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            idx === activeSlide ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
-          }`}
+          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${idx === activeSlide ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
+            }`}
         >
-          
           <img
             src={slide.image}
             alt={slide.title}
-            className={`w-full h-full object-cover object-[center_20%] transition-transform duration-10000 ease-out ${
-              idx === activeSlide ? "scale-105" : "scale-100"
-            }`}
+            className={`w-full h-full object-cover object-[center_20%] transition-transform duration-10000 ease-out ${idx === activeSlide ? "scale-105" : "scale-100"
+              }`}
             loading={idx === 0 ? "eager" : "lazy"}
           />
 
-          
           <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-black/20" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30" />
         </div>
       ))}
 
-      
       <div className="relative z-20 max-w-7xl mx-auto h-full px-4 lg:px-8 flex flex-col justify-between py-10 lg:py-14">
-        
+        {/* Üst Kısım: Tag ve Ok Butonları */}
         <div className="flex items-center justify-between">
           <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] tracking-[0.25em] uppercase font-light text-stone-200">
             <span className="size-1.5 rounded-full bg-white animate-pulse" />
             <span>{current.seasonTag}</span>
           </div>
 
-          
           <div className="hidden sm:flex items-center gap-2">
             <button
               type="button"
               onClick={prevSlide}
               aria-label="Önceki Görünüm"
-              className="size-10 rounded-full border border-white/20 hover:border-white hover:bg-white/10 backdrop-blur-sm flex items-center justify-center text-white transition-all"
+              className="size-10 rounded-full border border-white/20 hover:border-white hover:bg-white/10 backdrop-blur-sm flex items-center justify-center text-white transition-all cursor-pointer"
             >
               <ChevronLeft className="size-4" />
             </button>
@@ -143,14 +127,14 @@ export default function HeroBanner() {
               type="button"
               onClick={nextSlide}
               aria-label="Sonraki Görünüm"
-              className="size-10 rounded-full border border-white/20 hover:border-white hover:bg-white/10 backdrop-blur-sm flex items-center justify-center text-white transition-all"
+              className="size-10 rounded-full border border-white/20 hover:border-white hover:bg-white/10 backdrop-blur-sm flex items-center justify-center text-white transition-all cursor-pointer"
             >
               <ChevronRight className="size-4" />
             </button>
           </div>
         </div>
 
-        
+        {/* Orta Kısım: Başlık, Açıklama ve CTA */}
         <div className="max-w-2xl space-y-6">
           <div className="space-y-2">
             <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-light tracking-tight text-white leading-[1.05]">
@@ -181,45 +165,46 @@ export default function HeroBanner() {
           </div>
         </div>
 
-        
+        {/* Alt Kısım: Senkron İlerleme Çubukları ve Öne Çıkan Ürün */}
         <div className="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6 pt-4">
-          
           <div className="flex items-center gap-4 w-full sm:w-auto">
-            {HERO_SLIDES.map((slide, idx) => (
-              <button
-                key={slide.id}
-                type="button"
-                onClick={() => {
-                  setActiveSlide(idx);
-                  setProgress(0);
-                }}
-                className="group flex flex-col gap-1.5 flex-1 sm:w-28 text-left cursor-pointer outline-none"
-              >
-                <div className="h-0.5 w-full bg-white/25 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-white transition-all duration-100 ease-linear"
-                    style={{
-                      width:
-                        idx === activeSlide
-                          ? `${progress}%`
-                          : idx < activeSlide
-                          ? "100%"
-                          : "0%",
-                    }}
-                  />
-                </div>
-                <span
-                  className={`text-[10px] tracking-[0.2em] uppercase font-medium transition-colors ${
-                    idx === activeSlide ? "text-white" : "text-white/40 group-hover:text-white/70"
-                  }`}
+            {HERO_SLIDES.map((slide, idx) => {
+              const isActive = idx === activeSlide;
+              const isPast = idx < activeSlide;
+
+              return (
+                <button
+                  key={slide.id}
+                  type="button"
+                  onClick={() => setActiveSlide(idx)}
+                  className="group flex flex-col gap-1.5 flex-1 sm:w-28 text-left cursor-pointer outline-none"
                 >
-                  0{idx + 1} • {slide.id === "slide-1" ? "KETEN" : slide.id === "slide-2" ? "SATEN" : "TAILORED"}
-                </span>
-              </button>
-            ))}
+                  <div className="h-0.5 w-full bg-white/25 rounded-full overflow-hidden relative">
+                    {isActive ? (
+                      <div
+                        key={`slide-bar-${activeSlide}`}
+                        onAnimationEnd={nextSlide}
+                        className="h-full bg-white"
+                        style={{
+                          animation: "progressFill 6s linear forwards",
+                        }}
+                      />
+                    ) : (
+                      <div className={`h-full bg-white ${isPast ? "w-full" : "w-0"}`} />
+                    )}
+                  </div>
+
+                  <span
+                    className={`text-[10px] tracking-[0.2em] uppercase font-medium transition-colors ${isActive ? "text-white" : "text-white/40 group-hover:text-white/70"
+                      }`}
+                  >
+                    0{idx + 1} • {idx === 0 ? "KETEN" : idx === 1 ? "SATEN" : "TAILORED"}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          
           <div className="w-full sm:w-auto">
             <Link
               href={`/urun/${current.featuredProduct.slug}`}

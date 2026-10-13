@@ -40,7 +40,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
   const mainCtaRef = useRef<HTMLDivElement>(null);
 
   const [emblaRef, emblaApi] = useEmblaCarousel({
-    loop: false,
+    loop: true,
     dragFree: false,
     skipSnaps: false,
     containScroll: "trimSnaps",
@@ -82,21 +82,15 @@ export default function ProductClient({ slug }: ProductClientProps) {
   }, [emblaApi]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowStickyBar(!entry.isIntersecting);
-      },
-      { threshold: 0.1 }
-    );
-
-    const target = mainCtaRef.current;
-    if (target) {
-      observer.observe(target);
+    const handleScroll = () => {
+      if (!mainCtaRef.current) return;
+      const rect = mainCtaRef.current.getBoundingClientRect()
+      setShowStickyBar(rect.bottom < 0)
     }
+    window.addEventListener("scroll", handleScroll, { passive: true })
+    handleScroll()
+    return () => window.removeEventListener("scroll", handleScroll)
 
-    return () => {
-      if (target) observer.unobserve(target);
-    };
   }, []);
 
   if (!product) {
@@ -128,8 +122,8 @@ export default function ProductClient({ slug }: ProductClientProps) {
   const similarProducts = ALL_PRODUCTS.filter((p) => p.id !== product.id).slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-white">
-      
+    <div className="min-h-screen bg-white ">
+
       <div className="border-b border-stone-200 py-3 bg-[#faf9f6]">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11px] text-stone-500 tracking-wider uppercase">
@@ -148,23 +142,22 @@ export default function ProductClient({ slug }: ProductClientProps) {
         </div>
       </div>
 
-      
+
       <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 lg:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16">
-          
+
           <div className="lg:col-span-7 flex flex-col-reverse sm:flex-row gap-3 sm:gap-4">
-            
+
             <div className="flex sm:flex-col gap-2.5 overflow-x-auto sm:overflow-y-auto shrink-0 pb-2 sm:pb-0">
               {product.images.map((img, idx) => (
                 <button
                   key={idx}
                   type="button"
                   onClick={() => scrollToIndex(idx)}
-                  className={`size-18 sm:size-20 shrink-0 overflow-hidden border transition-all ${
-                    activeImageIndex === idx
-                      ? "border-stone-950 ring-1 ring-stone-950"
-                      : "border-stone-200 opacity-70 hover:opacity-100"
-                  }`}
+                  className={`size-18 sm:size-20 shrink-0 overflow-hidden border transition-all ${activeImageIndex === idx
+                    ? "border-stone-950 ring-1 ring-stone-950"
+                    : "border-stone-200 opacity-70 hover:opacity-100"
+                    }`}
                 >
                   <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
                 </button>
@@ -237,9 +230,8 @@ export default function ProductClient({ slug }: ProductClientProps) {
                   {product.images.map((_, idx) => (
                     <span
                       key={idx}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        activeImageIndex === idx ? "w-4 bg-white" : "w-1.5 bg-white/50"
-                      }`}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${activeImageIndex === idx ? "w-4 bg-white" : "w-1.5 bg-white/50"
+                        }`}
                     />
                   ))}
                 </div>
@@ -247,7 +239,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
             </div>
           </div>
 
-          
+
           <div className="lg:col-span-5 space-y-6">
             <div className="space-y-1.5 border-b border-stone-200 pb-5">
               <span className="text-[10px] tracking-[0.3em] uppercase text-stone-400 font-semibold block">
@@ -269,7 +261,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
               </div>
             </div>
 
-            
+
             {product.colors && (
               <div className="space-y-2">
                 <span className="text-xs uppercase tracking-wider text-stone-500 font-medium block">
@@ -282,18 +274,17 @@ export default function ProductClient({ slug }: ProductClientProps) {
                       type="button"
                       onClick={() => setSelectedColor(color)}
                       style={{ backgroundColor: color }}
-                      className={`size-6 rounded-full border transition-all ${
-                        selectedColor === color
-                          ? "ring-2 ring-stone-950 ring-offset-2 scale-110"
-                          : "border-stone-300 hover:scale-105"
-                      }`}
+                      className={`size-6 rounded-full border transition-all ${selectedColor === color
+                        ? "ring-2 ring-stone-950 ring-offset-2 scale-110"
+                        : "border-stone-300 hover:scale-105"
+                        }`}
                     />
                   ))}
                 </div>
               </div>
             )}
 
-            
+
             <div className="space-y-2 pt-1">
               <div className="flex items-center justify-between text-xs">
                 <span className="uppercase tracking-wider text-stone-500 font-medium">
@@ -315,11 +306,10 @@ export default function ProductClient({ slug }: ProductClientProps) {
                     key={size}
                     type="button"
                     onClick={() => setSelectedSize(size)}
-                    className={`py-2.5 text-xs font-semibold tracking-wider transition-all border ${
-                      selectedSize === size
-                        ? "border-stone-950 bg-stone-950 text-white"
-                        : "border-stone-200 text-stone-800 hover:border-stone-400 bg-[#faf9f6]"
-                    }`}
+                    className={`py-2.5 text-xs font-semibold tracking-wider transition-all border ${selectedSize === size
+                      ? "border-stone-950 bg-stone-950 text-white"
+                      : "border-stone-200 text-stone-800 hover:border-stone-400 bg-[#faf9f6]"
+                      }`}
                   >
                     {size}
                   </button>
@@ -327,10 +317,10 @@ export default function ProductClient({ slug }: ProductClientProps) {
               </div>
             </div>
 
-            
+
             <div ref={mainCtaRef} className="space-y-3 pt-3">
               <div className="flex items-center gap-3">
-                
+
                 <div className="flex items-center border border-stone-300 bg-[#faf9f6] h-12 px-2 shrink-0">
                   <button
                     type="button"
@@ -353,15 +343,14 @@ export default function ProductClient({ slug }: ProductClientProps) {
                   </button>
                 </div>
 
-                
+
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className={`flex-1 h-12 text-xs tracking-[0.25em] uppercase font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 ${
-                    isAdded
-                      ? "bg-emerald-800 text-white"
-                      : "bg-stone-950 text-white hover:bg-stone-800"
-                  }`}
+                  className={`flex-1 h-12 text-xs tracking-[0.25em] uppercase font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 ${isAdded
+                    ? "bg-emerald-800 text-white"
+                    : "bg-stone-950 text-white hover:bg-stone-800"
+                    }`}
                 >
                   {isAdded ? (
                     <>
@@ -378,7 +367,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
               </div>
             </div>
 
-            
+
             <div className="p-4 bg-[#faf9f6] border border-stone-200/80 space-y-2.5 text-xs text-stone-600 font-light">
               <div className="flex items-center gap-2.5">
                 <ShieldCheck className="size-4 text-stone-900 shrink-0" />
@@ -394,7 +383,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
               </div>
             </div>
 
-            
+
             <div className="border-t border-stone-200 pt-5 space-y-3 text-xs">
               <h3 className="font-semibold text-stone-900 uppercase tracking-wider text-[11px]">
                 Ürün Detayı & Kumaş İçeriği
@@ -409,7 +398,7 @@ export default function ProductClient({ slug }: ProductClientProps) {
         </div>
       </div>
 
-      
+
       <div className="border-t border-stone-200 py-16 bg-[#faf9f6]">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           <div className="text-center mb-10">
@@ -443,22 +432,20 @@ export default function ProductClient({ slug }: ProductClientProps) {
         </div>
       </div>
 
-      
+
       <div
-        className={`fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-[0_-4px_25px_rgba(0,0,0,0.08)] transition-all duration-300 transform ${
-          showStickyBar ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
-        }`}
+        className={`fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-[0_-4px_25px_rgba(0,0,0,0.08)] transition-all duration-300 transform ${showStickyBar ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3 flex items-center justify-between gap-3 sm:gap-6">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={handleAddToCart}
-              className={`h-11 px-5 sm:px-7 text-[11px] sm:text-xs tracking-[0.2em] uppercase font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 cursor-pointer ${
-                isAdded
-                  ? "bg-emerald-800 text-white"
-                  : "bg-stone-950 text-white hover:bg-stone-800"
-              }`}
+              className={`h-11 px-5 sm:px-7 text-[11px] sm:text-xs tracking-[0.2em] uppercase font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 cursor-pointer ${isAdded
+                ? "bg-emerald-800 text-white"
+                : "bg-stone-950 text-white hover:bg-stone-800"
+                }`}
             >
               {isAdded ? (
                 <>
