@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import useEmblaCarousel from "embla-carousel-react";
 import { ALL_PRODUCTS } from "@/lib/products";
 import ProductCard from "@/components/boutique/product-card";
 import { useCart } from "@/lib/cart-context";
 import {
+  ChevronLeft,
   ChevronRight,
   Heart,
   Truck,
@@ -36,6 +38,48 @@ export default function ProductClient({ slug }: ProductClientProps) {
   const [showStickyBar, setShowStickyBar] = useState(false);
 
   const mainCtaRef = useRef<HTMLDivElement>(null);
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
+    dragFree: false,
+    skipSnaps: false,
+    containScroll: "trimSnaps",
+    duration: 20,
+    watchDrag: true,
+  });
+
+  const onSelect = useCallback(() => {
+    if (!emblaApi) return;
+    setActiveImageIndex(emblaApi.selectedScrollSnap());
+  }, [emblaApi]);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi, onSelect]);
+
+  const scrollToIndex = useCallback(
+    (index: number) => {
+      if (!emblaApi) return;
+      emblaApi.scrollTo(index);
+    },
+    [emblaApi]
+  );
+
+  const handlePrev = useCallback(() => {
+    if (!emblaApi) return;
+    emblaApi.scrollPrev();
+  }, [emblaApi]);
+
+  const handleNext = useCallback(() => {
+    if (!emblaApi) return;
+    emblaApi.scrollNext();
+  }, [emblaApi]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -115,31 +159,64 @@ export default function ProductClient({ slug }: ProductClientProps) {
                 <button
                   key={idx}
                   type="button"
-                  onClick={() => setActiveImageIndex(idx)}
+                  onClick={() => scrollToIndex(idx)}
                   className={`size-18 sm:size-20 shrink-0 overflow-hidden border transition-all ${
                     activeImageIndex === idx
                       ? "border-stone-950 ring-1 ring-stone-950"
                       : "border-stone-200 opacity-70 hover:opacity-100"
                   }`}
                 >
-                  
                   <img src={img} alt={`${product.name} ${idx + 1}`} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>
 
-            
-            <div className="relative flex-1 aspect-[3/4] bg-stone-100 overflow-hidden">
-              
-              <img
-                src={product.images[activeImageIndex] || product.images[0]}
-                alt={product.name}
-                className="w-full h-full object-cover"
-                loading="eager"
-              />
+            <div className="group relative flex-1 aspect-3/4 bg-stone-100 overflow-hidden">
+              <div
+                ref={emblaRef}
+                className="w-full h-full overflow-hidden select-none touch-pan-y"
+              >
+                <div className="flex h-full select-none">
+                  {product.images.map((img, idx) => (
+                    <div
+                      key={idx}
+                      className="relative min-w-0 flex-[0_0_100%] h-full select-none"
+                    >
+                      <img
+                        src={img}
+                        alt={`${product.name} ${idx + 1}`}
+                        className="w-full h-full object-cover select-none pointer-events-none"
+                        loading={idx === 0 ? "eager" : "lazy"}
+                        draggable={false}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {product.images.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={handlePrev}
+                    aria-label="Önceki görsel"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-stone-800 hover:text-stone-950 shadow-sm backdrop-blur-xs opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity focus:outline-hidden"
+                  >
+                    <ChevronLeft className="size-4.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    aria-label="Sonraki görsel"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2.5 rounded-full bg-white/80 hover:bg-white text-stone-800 hover:text-stone-950 shadow-sm backdrop-blur-xs opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity focus:outline-hidden"
+                  >
+                    <ChevronRight className="size-4.5" />
+                  </button>
+                </>
+              )}
 
               {product.badge && (
-                <span className="absolute top-4 left-4 bg-stone-950 text-white text-[10px] tracking-widest px-3 py-1 uppercase font-semibold">
+                <span className="absolute top-4 left-4 bg-stone-950 text-white text-[10px] tracking-widest px-3 py-1 uppercase font-semibold pointer-events-none">
                   {product.badge}
                 </span>
               )}
@@ -148,12 +225,25 @@ export default function ProductClient({ slug }: ProductClientProps) {
                 type="button"
                 onClick={() => setIsLiked(!isLiked)}
                 aria-label="Favorilere ekle"
-                className="absolute top-4 right-4 p-2.5 rounded-full bg-white/90 backdrop-blur-xs text-stone-700 hover:text-stone-950 shadow-sm"
+                className="absolute top-4 right-4 p-2.5 rounded-full bg-white/90 backdrop-blur-xs text-stone-700 hover:text-stone-950 shadow-sm z-10"
               >
                 <Heart
                   className={`size-4.5 ${isLiked ? "fill-stone-950 text-stone-950" : ""}`}
                 />
               </button>
+
+              {product.images.length > 1 && (
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-stone-950/40 backdrop-blur-xs sm:hidden">
+                  {product.images.map((_, idx) => (
+                    <span
+                      key={idx}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                        activeImageIndex === idx ? "w-4 bg-white" : "w-1.5 bg-white/50"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
