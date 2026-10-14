@@ -1,5 +1,5 @@
 "use client";
-
+import { createPortal } from "react-dom";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -20,6 +20,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
+import { create } from "domain";
 
 interface ProductClientProps {
   slug: string;
@@ -36,6 +37,11 @@ export default function ProductClient({ slug }: ProductClientProps) {
   const [isLiked, setIsLiked] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   const [showStickyBar, setShowStickyBar] = useState(false);
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const mainCtaRef = useRef<HTMLDivElement>(null);
 
@@ -432,84 +438,87 @@ export default function ProductClient({ slug }: ProductClientProps) {
         </div>
       </div>
 
+      {mounted && createPortal(
 
-      <div
-        className={`fixed bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-[0_-4px_25px_rgba(0,0,0,0.08)] transition-all duration-300 transform ${showStickyBar ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
-          }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3 flex items-center justify-between gap-3 sm:gap-6">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              className={`h-11 px-5 sm:px-7 text-[11px] sm:text-xs tracking-[0.2em] uppercase font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 cursor-pointer ${isAdded
-                ? "bg-emerald-800 text-white"
-                : "bg-stone-950 text-white hover:bg-stone-800"
-                }`}
-            >
-              {isAdded ? (
-                <>
-                  <Check className="size-3.5" />
-                  <span>EKLENDİ</span>
-                </>
-              ) : (
-                <>
-                  <ShoppingBag className="size-3.5" />
-                  <span>SEPETE EKLE</span>
-                </>
-              )}
-            </button>
-
-            <div className="hidden sm:block">
-              <h4 className="text-xs font-medium text-stone-900 truncate max-w-[200px]">
-                {product.name}
-              </h4>
-              <p className="text-xs font-semibold text-stone-950">
-                {product.price.toLocaleString("tr-TR")} TL
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <div className="flex items-center gap-1">
-              <select
-                value={selectedSize}
-                onChange={(e) => setSelectedSize(e.target.value)}
-                aria-label="Beden Seçin"
-                className="bg-[#faf9f6] border border-stone-300 text-stone-900 text-xs py-2 px-2.5 focus:outline-none focus:border-stone-900 uppercase font-medium cursor-pointer"
-              >
-                {product.sizes.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex items-center border border-stone-300 bg-[#faf9f6] h-11 px-1 shrink-0">
+        <div
+          className={`fixed visible md:hidden bottom-0 inset-x-0 z-30 bg-white/95 backdrop-blur-md border-t border-stone-200/90 shadow-[0_-4px_25px_rgba(0,0,0,0.08)] transition-all duration-300 transform ${showStickyBar ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
+            }`}
+        >
+          <div className="max-w-7xl mx-auto px-4 lg:px-8 py-3 flex items-center justify-between gap-3 sm:gap-6">
+            <div className="flex items-center gap-3">
               <button
                 type="button"
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                aria-label="Adet Azalt"
-                className="size-8 flex items-center justify-center text-stone-600 hover:text-stone-950 transition-colors"
+                onClick={handleAddToCart}
+                className={`h-11 px-5 sm:px-7 text-[11px] sm:text-xs tracking-[0.2em] uppercase font-semibold flex items-center justify-center gap-2 transition-all shadow-md active:scale-98 cursor-pointer ${isAdded
+                  ? "bg-emerald-800 text-white"
+                  : "bg-stone-950 text-white hover:bg-stone-800"
+                  }`}
               >
-                <Minus className="size-3" />
+                {isAdded ? (
+                  <>
+                    <Check className="size-3.5" />
+                    <span>EKLENDİ</span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingBag className="size-3.5" />
+                    <span>SEPETE EKLE</span>
+                  </>
+                )}
               </button>
-              <span className="w-7 text-center text-xs font-semibold text-stone-950">
-                {quantity}
-              </span>
-              <button
-                type="button"
-                onClick={() => setQuantity((q) => q + 1)}
-                aria-label="Adet Artır"
-                className="size-8 flex items-center justify-center text-stone-600 hover:text-stone-950 transition-colors"
-              >
-                <Plus className="size-3" />
-              </button>
+
+              <div className="hidden sm:block">
+                <h4 className="text-xs font-medium text-stone-900 truncate max-w-[200px]">
+                  {product.name}
+                </h4>
+                <p className="text-xs font-semibold text-stone-950">
+                  {product.price.toLocaleString("tr-TR")} TL
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              <div className="flex items-center gap-1">
+                <select
+                  value={selectedSize}
+                  onChange={(e) => setSelectedSize(e.target.value)}
+                  aria-label="Beden Seçin"
+                  className="bg-[#faf9f6] border border-stone-300 text-stone-900 text-xs py-2 px-2.5 focus:outline-none focus:border-stone-900 uppercase font-medium cursor-pointer"
+                >
+                  {product.sizes.map((s) => (
+                    <option key={s} value={s}>
+                      {s}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center border border-stone-300 bg-[#faf9f6] h-11 px-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  aria-label="Adet Azalt"
+                  className="size-8 flex items-center justify-center text-stone-600 hover:text-stone-950 transition-colors"
+                >
+                  <Minus className="size-3" />
+                </button>
+                <span className="w-7 text-center text-xs font-semibold text-stone-950">
+                  {quantity}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity((q) => q + 1)}
+                  aria-label="Adet Artır"
+                  className="size-8 flex items-center justify-center text-stone-600 hover:text-stone-950 transition-colors"
+                >
+                  <Plus className="size-3" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+        , document.body)}
+
     </div>
   );
 }
